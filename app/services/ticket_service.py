@@ -1,7 +1,9 @@
 from uuid import UUID
 
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
+from app.core.exceptions import ApplicationServiceError
 from app.db.models import Ticket
 from app.db.repositories import TicketRepository
 
@@ -27,7 +29,16 @@ class TicketService:
             description=description,
             priority=priority,
         )
-        self.repository.add(ticket)
-        self.db.commit()
-        self.db.refresh(ticket)
-        return ticket
+
+        try:
+            self.repository.add(ticket)
+            self.db.commit()
+            self.db.refresh(ticket)
+            return ticket
+
+        except SQLAlchemyError as exc:
+            self.db.rollback()
+
+            raise ApplicationServiceError(
+                "Failed to create support ticket"
+            ) from exc

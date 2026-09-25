@@ -1,7 +1,4 @@
 """End-to-end RAG pipeline orchestration."""
-
-from __future__ import annotations
-
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.ai.rag.generator import (
