@@ -1,0 +1,14 @@
+{
+  "knowledge_base_id": "novamart-support-kb",
+  "version": "1.0",
+  "documents": [
+    {"path": "faq.md", "document_id": "faq", "category": "faq"},
+    {"path": "product_information.md", "document_id": "product-information", "category": "product"},
+    {"path": "refund_policy.md", "document_id": "refund-policy", "category": "refunds"},
+    {"path": "cancellation_policy.md", "document_id": "cancellation-policy", "category": "cancellations"},
+    {"path": "shipping_policy.md", "document_id": "shipping-policy", "category": "shipping"},
+    {"path": "payment_policy.md", "document_id": "payment-policy", "category": "payments"},
+    {"path": "account_policy.md", "document_id": "account-policy", "category": "account"},
+    {"path": "support_guidelines.md", "document_id": "support-guidelines", "category": "support-guidelines"}
+  ]
+}
