@@ -15,6 +15,9 @@ dependencies = [
     "alembic",
     "pydantic",
     "pydantic-settings",
+    "fastembed>=0.8.1",
+    "qdrant-client>=1.19.1",
+    "openai>=3.19.2",
 ]
 
 [dependency-groups]

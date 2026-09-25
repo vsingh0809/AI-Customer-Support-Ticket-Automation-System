@@ -1,5 +1,5 @@
-from uuid import uuid4
 from unittest.mock import Mock
+from uuid import uuid4
 
 from app.db.models import Order
 from app.db.repositories import OrderRepository
