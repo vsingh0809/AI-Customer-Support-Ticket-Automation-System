@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
 from sqlalchemy import DateTime, ForeignKey, String, Text
@@ -20,7 +20,7 @@ class Ticket(Base):
     priority: Mapped[str] = mapped_column(String(30), default="normal")
     status: Mapped[str] = mapped_column(String(30), default="open", index=True)
     description: Mapped[str] = mapped_column(Text)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
 
     customer = relationship("Customer", back_populates="tickets")
     conversation = relationship("Conversation", back_populates="tickets")

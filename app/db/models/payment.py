@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 from uuid import UUID, uuid4
 
@@ -17,6 +17,6 @@ class Payment(Base):
     transaction_id: Mapped[str] = mapped_column(String(100), unique=True, index=True)
     status: Mapped[str] = mapped_column(String(40), index=True)
     amount: Mapped[Decimal] = mapped_column(Numeric(12, 2))
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
 
     order = relationship("Order", back_populates="payments")
