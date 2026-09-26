@@ -8,11 +8,13 @@ from langgraph.graph import END, START, StateGraph
 
 from app.ai.agent.argument_extractor import ArgumentExtractor
 from app.ai.agent.contracts import AgentRoute
+from app.ai.agent.finalize import GuardrailPipeline, TurnTracer
 from app.ai.agent.intent_classifier import IntentClassifier
 from app.ai.agent.nodes import (
     build_argument_preparation_node,
     build_clarification_node,
     build_classification_node,
+    build_finalization_node,
     build_rag_node,
     build_routing_node,
     build_tool_node,
@@ -46,6 +48,16 @@ def _route_after_intent(
     return "end"
 
 
+def _route_after_argument_preparation(
+    state: AgentState,
+) -> Literal["execute_tool", "ask_clarification"]:
+    """Choose tool execution or clarification."""
+    if state.get("missing_fields"):
+        return "ask_clarification"
+
+    return "execute_tool"
+
+
 def build_agent_graph(
     classifier: IntentClassifier,
     router: AgentRouter,
@@ -54,6 +66,8 @@ def build_agent_graph(
     tool_registry: ToolRegistry,
     argument_extractor: ArgumentExtractor | None = None,
     tool_response_generator: ToolResponseGenerator | None = None,
+    tracer: TurnTracer | None = None,
+    guardrails: GuardrailPipeline | None = None,
 ):
     """Build and compile the customer-support agent graph."""
     graph = StateGraph(AgentState)
@@ -101,8 +115,18 @@ def build_agent_graph(
     if tool_response_generator is not None:
         graph.add_node(
             "tool_response",
-            build_tool_response_node(tool_response_generator),
+            build_tool_response_node(
+                tool_response_generator
+            ),
         )
+
+    graph.add_node(
+        "finalize_turn",
+        build_finalization_node(
+            tracer=tracer,
+            guardrails=guardrails,
+        ),
+    )
 
     graph.add_edge(
         START,
@@ -120,13 +144,13 @@ def build_agent_graph(
         {
             "rag": "rag",
             "tool": "select_tool",
-            "end": END,
+            "end": "finalize_turn",
         },
     )
 
     graph.add_edge(
         "rag",
-        END,
+        "finalize_turn",
     )
 
     graph.add_edge(
@@ -151,26 +175,22 @@ def build_agent_graph(
 
         graph.add_edge(
             "tool_response",
-            END,
+            "finalize_turn",
         )
     else:
         graph.add_edge(
             "execute_tool",
-            END,
+            "finalize_turn",
         )
 
     graph.add_edge(
         "ask_clarification",
+        "finalize_turn",
+    )
+
+    graph.add_edge(
+        "finalize_turn",
         END,
     )
 
     return graph.compile()
-
-def _route_after_argument_preparation(
-    state: AgentState,
-) -> Literal["execute_tool", "ask_clarification"]:
-    """Choose tool execution or clarification."""
-    if state.get("missing_fields"):
-        return "ask_clarification"
-
-    return "execute_tool"

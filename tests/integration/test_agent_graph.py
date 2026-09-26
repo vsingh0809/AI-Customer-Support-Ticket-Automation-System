@@ -245,6 +245,17 @@ def test_graph_executes_rag_route() -> None:
 
     generator.generate.assert_called_once()
 
+    assert result["conversation_history"] == [
+    {
+        "role": "user",
+        "content": "What is your refund policy?",
+    },
+    {
+        "role": "assistant",
+        "content": "Refunds are available within 7 days.",
+    },
+]
+
 
 def test_graph_stores_retrieved_context_and_sources() -> None:
     classifier = IntentClassifier(
@@ -414,6 +425,17 @@ def test_graph_asks_for_missing_order_id() -> None:
     )
 
     assert result["tool_arguments"] == {}
+
+    assert result["conversation_history"] == [
+    {
+        "role": "user",
+        "content": "Where is my order?",
+    },
+    {
+        "role": "assistant",
+        "content": "Please provide your order ID so I can check it.",
+    },
+]
 
 
 def test_clarification_does_not_execute_tool() -> None:
@@ -697,3 +719,22 @@ def test_graph_generates_fallback_for_failed_tool() -> None:
     )
 
     assert tool_response_provider.prompts == []
+ 
+
+
+def test_graph_records_current_user_turn() -> None:
+    graph = _build_graph("knowledge_query")
+
+    state = {
+        "conversation_id": uuid4(),
+        "customer_id": uuid4(),
+        "user_message": "What is your refund policy?",
+        "errors": [],
+    }
+
+    result = graph.invoke(state)
+
+    assert result["conversation_history"][0] == {
+        "role": "user",
+        "content": "What is your refund policy?",
+    }   

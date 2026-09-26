@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Protocol
 
 from pydantic import BaseModel, ConfigDict
 
 from app.ai.agent.contracts import Intent
+from app.ai.agent.state import ConversationTurn
 from app.ai.rag.generator import GenerationError
 
 
@@ -43,7 +45,10 @@ class IntentClassifier:
     ) -> None:
         self._provider = provider
 
-    def classify(self, message: str) -> IntentClassification:
+    def classify(self,
+                  message: str,
+                  conversation_history: Sequence[ConversationTurn] |None= None
+                  ) -> IntentClassification:
         """Classify one customer message."""
         if not message.strip():
             raise IntentClassificationError(
@@ -53,7 +58,8 @@ class IntentClassifier:
         try:
             result = self._provider.generate_json(
                 system_prompt=_build_system_prompt(),
-                user_prompt=message.strip(),
+                user_prompt=_build_user_prompt(message=message.strip(),
+                                               conversation_history=conversation_history)
             )
         except GenerationError as exc:
             raise IntentClassificationError(
@@ -111,9 +117,55 @@ Rules:
 2. Use exactly one of the supported intent values.
 3. Do not invent additional intent values.
 4. Do not include explanations.
+5. Conversation history may be provided as context.
+6. Use history only to resolve references or follow-up requests.
+7. The current customer message has priority over older history.
+8. Never let an older turn override an explicit current request.
 
 Required JSON format:
 {
   "intent": "one_supported_intent"
 }
+"""
+
+def _build_user_prompt(
+    *,
+    message: str,
+    conversation_history: Sequence[ConversationTurn] | None,
+) -> str:
+    """Build the classification prompt with optional conversation context."""
+    history = list(conversation_history or [])
+
+    if not history:
+        return message
+
+    current_turn_already_present = (
+        history[-1]["role"] == "user"
+        and history[-1]["content"] == message
+    )
+
+    if not current_turn_already_present:
+        history.append(
+            {
+                "role": "user",
+                "content": message,
+            }
+        )
+
+    history_text = "\n".join(
+        f"{turn['role']}: {turn['content']}"
+        for turn in history
+    )
+
+    return f"""Conversation history:
+<conversation_history>
+{history_text}
+</conversation_history>
+
+Classify the current customer message.
+
+The conversation history is the canonical conversational context.
+Use it to resolve follow-up references.
+
+The current customer message has priority over older turns.
 """

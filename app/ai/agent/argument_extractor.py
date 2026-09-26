@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Protocol
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.ai.agent.contracts import Intent
+from app.ai.agent.state import ConversationTurn
 
 
 class ArgumentExtractionError(RuntimeError):
@@ -83,6 +85,8 @@ class ArgumentExtractor:
         *,
         intent: Intent,
         message: str,
+        conversation_history: Sequence[ConversationTurn] | None = None,
+
     ) -> ArgumentPreparationResult:
         """Extract arguments and determine whether anything is missing."""
         if not message.strip():
@@ -93,7 +97,10 @@ class ArgumentExtractor:
         try:
             raw_result = self._provider.generate_json(
                 system_prompt=_build_system_prompt(intent),
-                user_prompt=message.strip(),
+                user_prompt=_build_user_prompt(
+                    message=message.strip(),
+                    conversation_history=conversation_history,
+                                ),
             )
 
             extracted = ExtractedToolArguments.model_validate(
@@ -171,7 +178,14 @@ Customer intent:
 
 Return JSON only.
 
-Extract ONLY information explicitly present in the customer message.
+Extract information explicitly present in the current customer message.
+
+If a required argument is missing from the current message, conversation
+history may be used only to resolve a follow-up reference.
+
+The current message has priority over conversation history.
+
+Never invent values.
 
 Never invent:
 - order IDs
@@ -224,3 +238,46 @@ def _build_clarification_question(
         return "Please briefly describe why you need human support."
 
     return "Please provide the missing information."
+
+def _build_user_prompt(
+    *,
+    message: str,
+    conversation_history: Sequence[ConversationTurn] | None,
+) -> str:
+    """Build the extraction prompt with optional conversation context."""
+    history = list(conversation_history or [])
+
+    if not history:
+        return message
+
+    current_turn_already_present = (
+        history[-1]["role"] == "user"
+        and history[-1]["content"] == message
+    )
+
+    if not current_turn_already_present:
+        history.append(
+            {
+                "role": "user",
+                "content": message,
+            }
+        )
+
+    history_text = "\n".join(
+        f"{turn['role']}: {turn['content']}"
+        for turn in history
+    )
+
+    return f"""Conversation history:
+<conversation_history>
+{history_text}
+</conversation_history>
+
+Extract the arguments required for the current customer request.
+
+Rules:
+1. Use the current customer message first.
+2. Use conversation history only to resolve follow-up references.
+3. An explicit current value overrides older values.
+4. Never invent values.
+"""

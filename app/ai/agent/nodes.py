@@ -9,6 +9,11 @@ from app.ai.agent.argument_extractor import (
     ArgumentExtractor,
 )
 from app.ai.agent.contracts import AgentRoute, Intent
+from app.ai.agent.finalize import (
+    GuardrailPipeline,
+    NoOpTracing,
+    TurnTracer,
+)
 from app.ai.agent.intent_classifier import (
     IntentClassificationError,
     IntentClassifier,
@@ -26,36 +31,6 @@ from app.ai.rag.generator import (
 )
 from app.ai.rag.retriever import RetrievalError, Retriever
 from app.ai.tools.registry import ToolRegistry, ToolRegistryError
-
-
-def build_classification_node(
-    classifier: IntentClassifier,
-) -> Callable[[AgentState], dict]:
-    """Build a node that classifies the current customer message."""
-
-    def classify_intent(state: AgentState) -> dict:
-        message = state.get("user_message", "")
-
-        if not message.strip():
-            return {
-                "errors": [
-                    "Customer message cannot be empty",
-                ]
-            }
-
-        try:
-            result = classifier.classify(message)
-        except IntentClassificationError as exc:
-            return {
-                "errors": [str(exc)],
-                "intent": None,
-            }
-
-        return {
-            "intent": result.intent,
-        }
-
-    return classify_intent
 
 
 def build_routing_node(
@@ -87,6 +62,54 @@ def build_routing_node(
 
     return route_intent
 
+def build_classification_node(
+    classifier: IntentClassifier,
+) -> Callable[[AgentState], dict]:
+    """Build a node that classifies the current customer message."""
+
+    def classify_intent(state: AgentState) -> dict:
+        message = state.get("user_message", "")
+
+        if not message.strip():
+            return {
+                "errors": [
+                    "Customer message cannot be empty",
+                ]
+            }
+
+        history = state.get(
+            "conversation_history",
+            [],
+        )
+
+        try:
+            result = classifier.classify(
+                message,
+                conversation_history=history,
+            )
+        except IntentClassificationError as exc:
+            return {
+                "errors": [str(exc)],
+                "intent": None,
+                "conversation_history": [
+                    {
+                        "role": "user",
+                        "content": message.strip(),
+                    }
+                ],
+            }
+
+        return {
+            "intent": result.intent,
+            "conversation_history": [
+                {
+                    "role": "user",
+                    "content": message.strip(),
+                }
+            ],
+        }
+
+    return classify_intent
 
 def build_rag_node(
     retriever: Retriever,
@@ -141,6 +164,12 @@ def build_rag_node(
             "retrieved_context": results,
             "sources": list(response.sources),
             "response": response.answer,
+            "conversation_history": [
+        {
+            "role": "assistant",
+            "content": response.answer,
+        }
+    ],
         }
 
     return run_rag
@@ -156,6 +185,12 @@ def build_clarification_node() -> Callable[[AgentState], dict]:
 
         return {
             "response": question,
+            "conversation_history": [
+                {
+                    "role": "assistant",
+                    "content": question,
+                }
+            ],
         }
 
     return ask_clarification
@@ -281,6 +316,10 @@ def build_argument_preparation_node(
             result = extractor.prepare(
                 intent=intent,
                 message=message,
+                conversation_history=state.get(
+        "conversation_history",
+        [],
+    ),
             )
         except ArgumentExtractionError as exc:
             return {
@@ -360,6 +399,30 @@ def build_tool_response_node(
 
         return {
             "response": result.answer,
+            "conversation_history": [
+        {
+            "role": "assistant",
+            "content": result.answer,
+        }
+    ],
         }
 
     return generate_tool_response
+
+
+def build_finalization_node(
+    tracer: TurnTracer | None = None,
+    guardrails: GuardrailPipeline | None = None,
+) -> Callable[[AgentState], dict]:
+    """Build the shared end-of-turn finalization node."""
+
+    active_tracer = tracer or NoOpTracing()
+    active_guardrails = guardrails or GuardrailPipeline()
+
+    def finalize_turn(state: AgentState) -> dict:
+        active_guardrails.check(state)
+        active_tracer.on_turn_end(state)
+
+        return {}
+
+    return finalize_turn

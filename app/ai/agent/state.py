@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Literal, TypedDict
+from typing import Annotated, Any, Literal, TypedDict
 from uuid import UUID
 
 from app.ai.agent.contracts import AgentRoute, Intent
@@ -11,10 +11,18 @@ from app.ai.rag.vector_store import VectorSearchResult
 
 
 class ConversationTurn(TypedDict):
-    """A single turn in the customer conversation."""
+    """A single message in the conversation."""
 
     role: Literal["user", "assistant"]
     content: str
+
+
+def _add_and_cap_history(
+    existing: list[ConversationTurn],
+    new: list[ConversationTurn],
+) -> list[ConversationTurn]:
+    """Append new conversation turns and retain the latest 12 messages."""
+    return (existing + new)[-12:]
 
 
 class AgentState(TypedDict, total=False):
@@ -23,7 +31,10 @@ class AgentState(TypedDict, total=False):
     conversation_id: UUID
     customer_id: UUID
 
-    conversation_history: list[ConversationTurn]
+    conversation_history: Annotated[
+        list[ConversationTurn],
+        _add_and_cap_history,
+    ]
 
     user_message: str
 
