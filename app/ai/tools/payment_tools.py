@@ -17,7 +17,7 @@ from app.services.payment_service import PaymentService
 class PaymentTools:
     """Business tools for payment-related customer requests."""
 
-    tool_name = "check_payment_status"
+    name = "check_payment_status"
 
     description = (
         "Check the latest payment status and transaction details "

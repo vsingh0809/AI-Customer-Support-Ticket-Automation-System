@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from collections.abc import Sequence
 from typing import Protocol
 
@@ -130,6 +131,67 @@ class DeepSeekProvider:
             )
 
         return content.strip()
+
+    def generate_json(
+        self,
+        *,
+        system_prompt: str,
+        user_prompt: str,
+    ) -> dict[str, object]:
+        """Generate and parse a JSON response from DeepSeek."""
+        if not system_prompt.strip():
+            raise GenerationError("System prompt cannot be empty")
+
+        if not user_prompt.strip():
+            raise GenerationError("User prompt cannot be empty")
+
+        try:
+            response = self._client.chat.completions.create(
+                model=self._model,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": system_prompt,
+                    },
+                    {
+                        "role": "user",
+                        "content": user_prompt,
+                    },
+                ],
+                temperature=self._temperature,
+                max_tokens=self._max_tokens,
+                response_format={"type": "json_object"},
+            )
+        except Exception as exc:
+            raise GenerationError(
+                "DeepSeek JSON generation request failed"
+            ) from exc
+
+        if not response.choices:
+            raise GenerationError(
+                "DeepSeek returned no completion choices"
+            )
+
+        content = response.choices[0].message.content
+
+        if not content or not content.strip():
+            raise GenerationError(
+                "DeepSeek returned empty JSON content"
+            )
+
+        try:
+            parsed = json.loads(content)
+        except json.JSONDecodeError as exc:
+            raise GenerationError(
+                "DeepSeek returned invalid JSON"
+            ) from exc
+
+        if not isinstance(parsed, dict):
+            raise GenerationError(
+                "DeepSeek JSON response must be an object"
+            )
+
+        return parsed
 
 
 class GroundedResponseGenerator:

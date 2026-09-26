@@ -20,7 +20,7 @@ _ALLOWED_PRIORITIES = {
 
 class EscalationTools:
     """Business tools for escalating customer issues to humans."""
-    tool_name = "escalate_to_human"
+    name = "escalate_to_human"
 
     description = (
         "Escalate a customer issue to human support when AI handling "

@@ -16,7 +16,7 @@ from app.services.order_service import OrderService
 class OrderTools:
     """Business tools for order-related customer requests."""
 
-    tool_name = "check_order_status"
+    name = "check_order_status"
 
     description = (
         "Check the current status, total amount, and expected delivery "

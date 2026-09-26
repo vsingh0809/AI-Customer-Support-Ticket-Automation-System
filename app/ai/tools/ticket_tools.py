@@ -23,7 +23,7 @@ _ALLOWED_PRIORITIES = {
 class TicketTools:
     """Business tools for support-ticket operations."""
 
-    tool_name = "create_support_ticket"
+    name = "create_support_ticket"
 
     description = (
         "Create a support ticket for a customer issue that requires "

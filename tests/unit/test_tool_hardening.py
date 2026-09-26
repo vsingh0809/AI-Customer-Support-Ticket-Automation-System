@@ -151,14 +151,14 @@ def test_escalation_tool_accepts_string_uuid() -> None:
     assert result.data["escalated"] is True
 
 def test_tool_metadata_is_defined() -> None:
-    assert OrderTools.tool_name == "check_order_status"
+    assert OrderTools.name == "check_order_status"
     assert OrderTools.description
 
-    assert PaymentTools.tool_name == "check_payment_status"
+    assert PaymentTools.name == "check_payment_status"
     assert PaymentTools.description
 
-    assert TicketTools.tool_name == "create_support_ticket"
+    assert TicketTools.name == "create_support_ticket"
     assert TicketTools.description
 
-    assert EscalationTools.tool_name == "escalate_to_human"
+    assert EscalationTools.name == "escalate_to_human"
     assert EscalationTools.description    
