@@ -8,18 +8,18 @@ from app.db.session import SessionLocal
 
 def seed() -> None:
     with SessionLocal() as db:
-        existing = db.scalar(select(Customer).where(Customer.email == "demo@example.com"))
+        existing = db.scalar(select(Customer).where(Customer.email == "rahul@example.com"))
         if existing:
             print("Seed data already exists")
             return
 
-        customer = Customer(email="demo@example.com", full_name="Demo Customer")
+        customer = Customer(email="rahul@example.com", full_name="rahul Singh")
         db.add(customer)
         db.flush()
 
         order = Order(
             customer_id=customer.id,
-            external_order_id="45821",
+            external_order_id="9999",
             status="shipped",
             total_amount=Decimal("1499.00"),
         )

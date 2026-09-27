@@ -9,9 +9,9 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://support_user:support_password@localhost:5432/support_db"
 
     openai_api_key: str | None = None
-    embedding_model: str = "text-embedding-3-small"
+    embedding_model: str = "BAAI/bge-small-en-v1.5"
     embedding_dimensions: int | None = None
-    embedding_batch_size: int = 64
+    embedding_batch_size: int = 384
 
     qdrant_url: str | None = None
     qdrant_api_key: str | None = None

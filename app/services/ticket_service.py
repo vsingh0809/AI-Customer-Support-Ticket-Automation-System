@@ -32,7 +32,7 @@ class TicketService:
 
         try:
             self.repository.add(ticket)
-            self.db.commit()
+            self.db.flush()
             self.db.refresh(ticket)
             return ticket
 
