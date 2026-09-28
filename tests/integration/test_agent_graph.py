@@ -738,3 +738,20 @@ def test_graph_records_current_user_turn() -> None:
         "role": "user",
         "content": "What is your refund policy?",
     }   
+
+def test_graph_preserves_detected_intents() -> None:
+    graph = _build_graph("order_status")
+
+    state = {
+        "conversation_id": uuid4(),
+        "customer_id": uuid4(),
+        "user_message": "Where is my order?",
+        "errors": [],
+    }
+
+    result = graph.invoke(state)
+
+    assert result["intent"] == Intent.ORDER_STATUS
+    assert result["intents"] == [
+        Intent.ORDER_STATUS,
+    ]

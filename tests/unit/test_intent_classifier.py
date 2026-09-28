@@ -138,3 +138,45 @@ def test_unknown_intent_is_valid() -> None:
     )
 
     assert result.intent == Intent.UNKNOWN
+
+def test_classifies_single_intent() -> None:
+    provider = FakeStructuredProvider(
+        {
+            "intent": "order_status",
+            "intents": ["order_status"],
+        }
+    )
+
+    classifier = IntentClassifier(provider)
+
+    result = classifier.classify(
+        "Where is my order 45821?"
+    )
+
+    assert result.intent == Intent.ORDER_STATUS
+    assert result.intents == (
+        Intent.ORDER_STATUS,
+    )
+
+def test_classifies_multiple_intents() -> None:
+    provider = FakeStructuredProvider(
+        {
+            "intent": "order_status",
+            "intents": [
+                "order_status",
+                "payment_status",
+            ],
+        }
+    )
+
+    classifier = IntentClassifier(provider)
+
+    result = classifier.classify(
+        "Check my order 45821 and tell me whether the payment was successful."
+    )
+
+    assert result.intent == Intent.ORDER_STATUS
+    assert result.intents == (
+        Intent.ORDER_STATUS,
+        Intent.PAYMENT_STATUS,
+    )     

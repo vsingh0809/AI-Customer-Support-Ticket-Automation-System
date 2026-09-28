@@ -16,6 +16,13 @@ class ConversationTurn(TypedDict):
     role: Literal["user", "assistant"]
     content: str
 
+class PlannedToolAction(TypedDict):
+    """One validated business action planned for the current turn."""
+
+    intent: Intent
+    tool_name: str
+    tool_arguments: dict[str, Any]
+    tool_result: dict[str, Any] | None
 
 def _add_and_cap_history(
     existing: list[ConversationTurn],
@@ -23,6 +30,40 @@ def _add_and_cap_history(
 ) -> list[ConversationTurn]:
     """Append new conversation turns and retain the latest 12 messages."""
     return (existing + new)[-12:]
+
+class ActionType:
+    """Supported workflow action types."""
+
+    TOOL = "tool"
+    RAG = "rag"
+
+
+
+class PlannedAction(TypedDict):
+    """One planned workflow action for the current customer request."""
+
+    intent: Intent
+    action_type: str
+    tool_name: str | None
+
+class PreparedAction(TypedDict):
+    """One planned action with validated execution arguments."""
+
+    intent: Intent
+    action_type: str
+    tool_name: str | None
+    tool_arguments: dict[str, Any] | None
+
+
+class ActionExecutionResult(TypedDict):
+    """Result produced by executing one planned action."""
+
+    intent: Intent
+    action_type: str
+    tool_name: str | None
+    success: bool
+    response: str | None
+    tool_result: dict[str, Any] | None
 
 
 class AgentState(TypedDict, total=False):
@@ -39,6 +80,13 @@ class AgentState(TypedDict, total=False):
     user_message: str
 
     intent: Intent | None
+    intents: list[Intent] | None
+    planned_actions: list[PlannedAction]
+
+    planned_tool_actions: list[PlannedToolAction]
+    prepared_actions: list[PreparedAction]
+    action_results: list[ActionExecutionResult]
+
     route: AgentRoute | None
 
     entities: dict[str, Any]

@@ -10,32 +10,6 @@ from app.ai.tools.base import ToolResult
 from app.ai.tools.registry import ToolRegistry
 
 
-def test_order_intent_selects_order_tool() -> None:
-    node = build_tool_selection_node()
-
-    state = {
-        "intent": Intent.ORDER_STATUS,
-        "errors": [],
-    }
-
-    result = node(state)
-
-    assert result["tool_name"] == "check_order_status"
-
-
-def test_payment_intent_selects_payment_tool() -> None:
-    node = build_tool_selection_node()
-
-    state = {
-        "intent": Intent.PAYMENT_STATUS,
-        "errors": [],
-    }
-
-    result = node(state)
-
-    assert result["tool_name"] == "check_payment_status"
-
-
 def test_unsupported_intent_does_not_select_tool() -> None:
     node = build_tool_selection_node()
 

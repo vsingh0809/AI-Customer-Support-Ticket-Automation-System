@@ -42,3 +42,19 @@ class TicketService:
             raise ApplicationServiceError(
                 "Failed to create support ticket"
             ) from exc
+
+    def get_by_id(
+        self,
+        *,
+        ticket_id: UUID,
+        customer_id: UUID,
+    ) -> Ticket | None:
+        try:
+            return self.repository.get_by_id(
+                ticket_id=ticket_id,
+                customer_id=customer_id,
+            )
+        except SQLAlchemyError as exc:
+            raise ApplicationServiceError(
+                "Failed to retrieve support ticket"
+            ) from exc
