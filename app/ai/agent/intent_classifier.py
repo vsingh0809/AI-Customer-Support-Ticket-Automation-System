@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Protocol
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.ai.agent.contracts import Intent
 from app.ai.agent.state import ConversationTurn
@@ -34,6 +34,22 @@ class IntentClassification(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     intent: Intent
+    intents: tuple[Intent, ...] = Field(default=())
+
+    @model_validator(mode="after")
+    def validate_intents(self) -> IntentClassification:
+        """Keep the legacy primary intent aligned with detected intents."""
+        if not self.intents:
+            return self.model_copy(
+                update={"intents": (self.intent,)}
+            )
+
+        if self.intents[0] != self.intent:
+            raise ValueError(
+                "Primary intent must match the first detected intent"
+            )
+
+        return self
 
 
 class IntentClassifier:
@@ -82,7 +98,34 @@ def _build_system_prompt() -> str:
     """Build the intent-classification instructions."""
     return """You are the intent classifier for NovaMart customer support.
 
-Classify the customer's message into exactly one supported intent.
+Classify the customer's message into one or more supported intents.
+
+A message may contain multiple independent customer requests.
+
+Examples:
+
+- "Where is my order 45821?"
+  → ["order_status"]
+
+- "Was my payment successful for order 45821?"
+  → ["payment_status"]
+
+- "Check my order 45821 and tell me whether the payment was successful."
+  → ["order_status", "payment_status"]
+
+Rules:
+1. Return JSON only.
+2. Return at least one supported intent.
+3. Use only the supported intent values.
+4. Do not invent intent values.
+5. If multiple requests are present, include every applicable intent.
+6. Preserve the logical order of the requested actions.
+7. The first intent is the primary intent.
+8. Do not include explanations.
+9. Conversation history may be provided as context.
+10. Use history only to resolve references or follow-up requests.
+11. The current customer message has priority over older history.
+12. Never let an older turn override an explicit current request.
 
 Supported intents:
 
@@ -124,7 +167,11 @@ Rules:
 
 Required JSON format:
 {
-  "intent": "one_supported_intent"
+  "intent": "primary_supported_intent",
+  "intents": [
+    "supported_intent_1",
+    "supported_intent_2"
+  ]
 }
 """
 

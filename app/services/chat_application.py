@@ -67,17 +67,40 @@ class ChatApplicationService:
 
         try:
             result = self._agent_graph.invoke(state)
+
+            print(
+                "[CHAT_GRAPH]"
+                f" intent={result.get('intent')}"
+                f" intents={result.get('intents')}"
+                f" route={result.get('route')}"
+                f" tool_name={result.get('tool_name')}"
+                f" response={result.get('response')!r}"
+                f" errors={result.get('errors')}"
+            )
+
+            response = result.get("response")
+
+            if not isinstance(response, str) or not response.strip():
+                errors = result.get("errors", [])
+
+                detail = (
+                    f": {'; '.join(str(error) for error in errors)}"
+                    if errors
+                    else ""
+                )
+
+                raise ChatApplicationError(
+                    "Customer-support workflow returned no response"
+                    f"{detail}"
+                )
+
+        except ChatApplicationError:
+            raise
+
         except Exception as exc:
             raise ChatApplicationError(
                 "Customer-support workflow failed"
             ) from exc
-
-        response = result.get("response")
-
-        if not isinstance(response, str) or not response.strip():
-            raise ChatApplicationError(
-                "Customer-support workflow returned no response"
-            )
 
         new_turns = [
             {
@@ -86,7 +109,7 @@ class ChatApplicationService:
             },
             {
                 "role": "assistant",
-                "content": response.strip(),
+                "content": response,
             },
         ]
 

@@ -147,21 +147,26 @@ class DeepSeekProvider:
 
         try:
             response = self._client.chat.completions.create(
-                model=self._model,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": system_prompt,
-                    },
-                    {
-                        "role": "user",
-                        "content": user_prompt,
-                    },
-                ],
-                temperature=self._temperature,
-                max_tokens=self._max_tokens,
-                response_format={"type": "json_object"},
-            )
+            model=self._model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": system_prompt,
+                },
+                {
+                    "role": "user",
+                    "content": user_prompt,
+                },
+            ],
+            temperature=self._temperature,
+            max_tokens=self._max_tokens,
+            response_format={"type": "json_object"},
+            extra_body={
+                "thinking": {
+                    "type": "disabled",
+                }
+            },
+        )
         except Exception as exc:
             raise GenerationError(
                 "DeepSeek JSON generation request failed"
@@ -172,12 +177,20 @@ class DeepSeekProvider:
                 "DeepSeek returned no completion choices"
             )
 
-        content = response.choices[0].message.content
+        choice = response.choices[0]
+        message = choice.message
+        content = message.content
+
+        print(
+            "[DEEPSEEK_JSON] "
+            f"finish_reason={choice.finish_reason} "
+            f"has_content={bool(content and content.strip())}"
+        )
 
         if not content or not content.strip():
             raise GenerationError(
                 "DeepSeek returned empty JSON content"
-            )
+    )
 
         try:
             parsed = json.loads(content)
