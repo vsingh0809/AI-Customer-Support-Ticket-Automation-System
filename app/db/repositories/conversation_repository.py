@@ -26,6 +26,21 @@ class ConversationRepository:
 
         return self.db.scalar(statement)
 
+    def list_by_customer(
+        self,
+        customer_id: UUID,
+    ) -> list[Conversation]:
+        statement = (
+            select(Conversation)
+            .where(Conversation.customer_id == customer_id)
+            .order_by(
+                Conversation.updated_at.desc(),
+                Conversation.created_at.desc(),
+            )
+        )
+
+        return list(self.db.scalars(statement).all())
+
     def add(
         self,
         conversation: Conversation,

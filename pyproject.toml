@@ -19,12 +19,13 @@ dependencies = [
     "qdrant-client>=1.19.1",
     "openai>=3.19.2",
     "langgraph>=1.2.12",
+    "streamlit",
+    "httpx2",
 ]
 
 [dependency-groups]
 dev = [
     "pytest",
-    "httpx2",
     "ruff",
 ]
 

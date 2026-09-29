@@ -25,7 +25,10 @@ from app.ai.tools.payment_tools import PaymentTools
 from app.ai.tools.registry import ToolRegistry
 from app.ai.tools.ticket_tools import TicketTools
 from app.core.config import get_settings
-from app.db.repositories import ConversationRepository, MessageRepository
+from app.db.repositories import (
+    ConversationRepository,
+    MessageRepository,
+)
 from app.db.session import get_db
 from app.services.chat_application import ChatApplicationService
 from app.services.conversation_memory import ConversationMemoryService
@@ -127,7 +130,7 @@ def get_static_agent_dependencies() -> StaticAgentDependencies:
 
 
 def get_conversation_memory_service(
-    db: Session,
+    db: Annotated[Session, Depends(get_db)],
 ) -> ConversationMemoryService:
     """Build the conversation-memory service for the current request."""
 
