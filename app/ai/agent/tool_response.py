@@ -127,6 +127,7 @@ class ToolResponseGenerator:
 
         try:
             answer = self._provider.generate(prompt)
+            
         except Exception:
             return self._build_multi_fallback(results)
 

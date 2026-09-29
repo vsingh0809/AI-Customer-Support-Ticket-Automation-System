@@ -1,20 +1,19 @@
+from datetime import UTC, datetime
 from unittest.mock import MagicMock, Mock, patch
 from uuid import UUID
-from datetime import UTC, datetime
 
 import streamlit as st
-
-from frontend.streamlit.api_client import ConversationDetail
-from frontend.streamlit.app import _select_conversation
 
 from frontend.streamlit.api_client import (
     ChatAPIClient,
     ChatAPIError,
     ChatResponse,
+    ConversationDetail,
 )
 from frontend.streamlit.app import (
     _initialize_session_state,
     _render_empty_state,
+    _select_conversation,
     _send_message,
     _start_new_conversation,
 )

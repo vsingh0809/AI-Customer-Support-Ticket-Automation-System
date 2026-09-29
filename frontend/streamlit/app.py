@@ -149,16 +149,10 @@ def _render_sidebar(
                 else conversation.title
             )
 
-            if st.button(
-                label,
-                key=f"conversation-{conversation.conversation_id}",
-                use_container_width=True,
-            ):
-                if _select_conversation(
-                    client,
-                    conversation.conversation_id,
-                ):
-                    st.rerun()
+            if st.button(label, key=f"conversation-{conversation.conversation_id}", use_container_width=True) and _select_conversation(client, conversation.conversation_id):
+                   
+                   st.rerun()
+
 
         if current_conversation_id is not None:
             st.divider()

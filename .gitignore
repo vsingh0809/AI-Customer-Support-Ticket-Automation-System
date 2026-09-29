@@ -36,5 +36,3 @@ dist/
 # Logs
 *.log
 logs/
-docs
-customer_support_ai.egg-info/
