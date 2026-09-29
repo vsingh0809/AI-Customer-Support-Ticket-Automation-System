@@ -17,10 +17,32 @@ class MessageRepository:
         statement = (
             select(Message)
             .where(Message.conversation_id == conversation_id)
-            .order_by(Message.created_at.asc())
+            .order_by(
+                Message.created_at.asc(),
+                Message.id.asc(),
+            )
         )
 
         return list(self.db.scalars(statement).all())
+
+    def get_first_user_message(
+        self,
+        conversation_id: UUID,
+    ) -> Message | None:
+        statement = (
+            select(Message)
+            .where(
+                Message.conversation_id == conversation_id,
+                Message.role == "user",
+            )
+            .order_by(
+                Message.created_at.asc(),
+                Message.id.asc(),
+            )
+            .limit(1)
+        )
+
+        return self.db.scalar(statement)
 
     def add(
         self,

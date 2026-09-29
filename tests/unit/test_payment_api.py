@@ -1,5 +1,6 @@
 from decimal import Decimal
-from uuid import UUID, uuid4
+from uuid import uuid4
+from uuid import UUID
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -58,7 +59,7 @@ def test_get_payment_returns_200() -> None:
         def get_by_external_id(
             self,
             external_order_id,
-            requested_customer_id:UUID,
+            requested_customer_id:uuid,
         ):
             assert external_order_id == "45821"
             assert requested_customer_id == customer_id
