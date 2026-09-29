@@ -1,15 +1,12 @@
+from datetime import UTC, datetime
 from unittest.mock import MagicMock, Mock, patch
 from uuid import UUID
 
 import httpx2
 import pytest
 
-from frontend.streamlit.api_client import (
-    ChatAPIClient,
-    ChatAPIError,ConversationDetail
-)
+from frontend.streamlit.api_client import ChatAPIClient, ChatAPIError, ConversationDetail
 from frontend.streamlit.config import FrontendSettings
-from datetime import UTC, datetime
 
 CUSTOMER_ID = UUID(
     "3f2b8f18-7f3d-4d6e-9a2c-5c3e4a7d8b1f"
@@ -129,12 +126,11 @@ def test_chat_translates_http_error_to_chat_api_error() -> None:
     with patch(
         "frontend.streamlit.api_client.httpx2.Client",
         return_value=mock_http_client,
-    ):
-        with pytest.raises(ChatAPIError) as exc_info:
-            client.chat(
-                customer_id=CUSTOMER_ID,
-                message="Hello",
-            )
+    ), pytest.raises(ChatAPIError) as exc_info:
+        client.chat(
+            customer_id=CUSTOMER_ID,
+            message="Hello",
+        )
 
     assert exc_info.value.status_code == 503
     assert str(exc_info.value) == (
@@ -155,12 +151,11 @@ def test_chat_translates_network_error_to_chat_api_error() -> None:
     with patch(
         "frontend.streamlit.api_client.httpx2.Client",
         return_value=mock_http_client,
-    ):
-        with pytest.raises(ChatAPIError) as exc_info:
-            client.chat(
-                customer_id=CUSTOMER_ID,
-                message="Hello",
-            )
+    ), pytest.raises(ChatAPIError) as exc_info:
+        client.chat(
+            customer_id=CUSTOMER_ID,
+            message="Hello",
+        )
 
     assert str(exc_info.value) == (
         "Unable to reach the support service. "
@@ -183,12 +178,11 @@ def test_chat_rejects_invalid_backend_response() -> None:
     with patch(
         "frontend.streamlit.api_client.httpx2.Client",
         return_value=mock_http_client,
-    ):
-        with pytest.raises(ChatAPIError) as exc_info:
-            client.chat(
-                customer_id=CUSTOMER_ID,
-                message="Hello",
-            )
+    ), pytest.raises(ChatAPIError) as exc_info:
+        client.chat(
+            customer_id=CUSTOMER_ID,
+            message="Hello",
+        )
 
     assert str(exc_info.value) == (
         "The support service returned an invalid response."
@@ -303,12 +297,11 @@ def test_get_conversation_translates_not_found() -> None:
     with patch(
         "frontend.streamlit.api_client.httpx2.Client",
         return_value=mock_http_client,
-    ):
-        with pytest.raises(ChatAPIError) as exc_info:
-            client.get_conversation(
-                customer_id=CUSTOMER_ID,
-                conversation_id=CONVERSATION_ID,
-            )
+    ), pytest.raises(ChatAPIError) as exc_info:
+        client.get_conversation(
+            customer_id=CUSTOMER_ID,
+            conversation_id=CONVERSATION_ID,
+        )
 
     assert exc_info.value.status_code == 404
     assert str(exc_info.value) == "Conversation not found."    

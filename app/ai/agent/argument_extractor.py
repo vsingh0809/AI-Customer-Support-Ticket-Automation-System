@@ -281,13 +281,19 @@ def _extract_order_id_from_text(text: str) -> str | None:
         return None
 
     explicit_patterns = (
-        r"\border\s*(?:number|no\.?|id)"
-        r"\s*(?:is|:|#|-)?\s*"
-        r"([A-Za-z0-9][A-Za-z0-9_-]{3,49})\b",
-        r"\border\s*#\s*"
-        r"([A-Za-z0-9][A-Za-z0-9_-]{3,49})\b",
-        r"\border\s+"
-        r"([0-9]{4,20})\b",
+        (
+            r"\border\s*(?:number|no\.?|id)"
+            r"\s*(?:is|:|#|-)?\s*"
+            r"([A-Za-z0-9][A-Za-z0-9_-]{3,49})\b"
+        ),
+        (
+            r"\border\s*#\s*"
+            r"([A-Za-z0-9][A-Za-z0-9_-]{3,49})\b"
+        ),
+        (
+            r"\border\s+"
+            r"([0-9]{4,20})\b"
+        ),
     )
 
     for pattern in explicit_patterns:

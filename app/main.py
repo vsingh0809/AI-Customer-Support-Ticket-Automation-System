@@ -11,7 +11,6 @@ from app.api.routes.payments import router as payments_router
 from app.api.routes.tickets import router as tickets_router
 from app.core.config import get_settings
 
-
 settings = get_settings()
 
 app = FastAPI(title=settings.app_name)
