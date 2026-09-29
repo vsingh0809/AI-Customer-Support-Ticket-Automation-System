@@ -1,263 +1,191 @@
-AI Customer Support & Ticket Automation System
+# AI Customer Support & Ticket Automation System
 
 An AI-powered customer-support application that combines:
 
-Retrieval-Augmented Generation (RAG)
-
-Agent-based workflow orchestration
-
-Business tools
-
-Conversation memory
-
-Support ticket creation
-
-Human escalation
-
-FastAPI backend
-
-Streamlit customer-facing interface
-
-PostgreSQL persistence
-
-Qdrant vector search
+- Retrieval-Augmented Generation (RAG)
+- Agent-based workflow orchestration
+- Business tools
+- Conversation memory
+- Support ticket creation
+- Human escalation
+- FastAPI backend
+- Streamlit customer-facing interface
+- PostgreSQL persistence
+- Qdrant vector search
 
 The system is designed to handle both knowledge-based questions and action-oriented customer requests rather than behaving as a simple LLM chatbot.
 
-1. Project Overview
+---
+
+## 1. Project Overview
 
 The AI Customer Support & Ticket Automation System automatically handles common customer-support workflows.
 
 Customers can:
 
-Ask general support questions
-
-Ask company-policy questions
-
-Check order status
-
-Check payment status
-
-Request support
-
-Create support tickets
-
-Continue previous conversations
-
-Escalate issues to human support
+- Ask general support questions
+- Ask company-policy questions
+- Check order status
+- Check payment status
+- Request support
+- Create support tickets
+- Continue previous conversations
+- Escalate issues to human support
 
 The agent determines the appropriate workflow for each request and can combine multiple actions when required.
 
-2. Problem Statement
+---
+
+## 2. Problem Statement
 
 Customer-support teams receive repetitive requests related to:
 
-Orders
-
-Payments
-
-Refunds
-
-Cancellations
-
-Shipping
-
-Product information
-
-Account issues
-
-Company policies
+- Orders
+- Payments
+- Refunds
+- Cancellations
+- Shipping
+- Product information
+- Account issues
+- Company policies
 
 A traditional chatbot can answer questions but cannot reliably perform application actions.
 
 This project addresses that limitation by separating:
 
-Knowledge retrieval
+1. Knowledge retrieval
+2. Agent reasoning and workflow planning
+3. Deterministic business operations
+4. Persistent conversation memory
+5. Ticket and escalation workflows
 
-Agent reasoning and workflow planning
+---
 
-Deterministic business operations
-
-Persistent conversation memory
-
-Ticket and escalation workflows
-
-3. Objectives
+## 3. Objectives
 
 The project aims to build a functional AI customer-support system that can:
 
-Understand customer intent
+- Understand customer intent
+- Retrieve grounded information from a knowledge base
+- Execute real application tools
+- Ask for missing information
+- Maintain conversation context
+- Support multiple requests in one message
+- Create support tickets
+- Escalate unresolved cases
+- Handle application and AI failures safely
 
-Retrieve grounded information from a knowledge base
+---
 
-Execute real application tools
+## 4. Features
 
-Ask for missing information
+### Customer Support
 
-Maintain conversation context
+- Natural-language chat interface
+- Multi-turn conversations
+- Persistent conversation history
+- New conversation support
 
-Support multiple requests in one message
+### Knowledge Base
 
-Create support tickets
+- FAQ
+- Product information
+- Refund policy
+- Cancellation policy
+- Shipping policy
+- Payment policy
+- Account policy
+- Support guidelines
 
-Escalate unresolved cases
+### RAG
 
-Handle application and AI failures safely
+- Markdown document loading
+- Document normalization
+- Chunking
+- Embedding generation
+- Qdrant vector storage
+- Similarity retrieval
+- Grounded response generation
+- Source references
 
-4. Features
-
-Customer Support
-
-Natural-language chat interface
-
-Multi-turn conversations
-
-Persistent conversation history
-
-New conversation support
-
-Knowledge Base
-
-FAQ
-
-Product information
-
-Refund policy
-
-Cancellation policy
-
-Shipping policy
-
-Payment policy
-
-Account policy
-
-Support guidelines
-
-RAG
-
-Markdown document loading
-
-Document normalization
-
-Chunking
-
-Embedding generation
-
-Qdrant vector storage
-
-Similarity retrieval
-
-Grounded response generation
-
-Source references
-
-Agent Workflows
+### Agent Workflows
 
 The agent can decide to:
 
-Search the knowledge base
+- Search the knowledge base
+- Call a business tool
+- Ask for missing information
+- Create a support ticket
+- Escalate to a human
+- Combine multiple actions
 
-Call a business tool
-
-Ask for missing information
-
-Create a support ticket
-
-Escalate to a human
-
-Combine multiple actions
-
-Business Tools
+### Business Tools
 
 Implemented tools:
 
-check_order_status
+- `check_order_status`
+- `check_payment_status`
+- `create_support_ticket`
+- `escalate_to_human`
 
-check_payment_status
+### Reliability
 
-create_support_ticket
+- Input validation
+- Tool validation
+- Customer ownership checks
+- Meaningful fallback responses
+- Retrieval failure handling
+- LLM failure handling
+- Tool failure handling
+- Ticket creation failure handling
 
-escalate_to_human
+---
 
-Reliability
+## 5. Technology Stack
 
-Input validation
+### Backend
 
-Tool validation
+- Python 3.11+
+- FastAPI
+- SQLAlchemy
+- Alembic
+- PostgreSQL 16
+- Pydantic
+- Pydantic Settings
 
-Customer ownership checks
+### AI / Agent
 
-Meaningful fallback responses
+- LangGraph
+- DeepSeek
+- Agent intent classification
+- Deterministic action planning
+- Tool calling
+- Multi-tool execution
 
-Retrieval failure handling
+### RAG
 
-LLM failure handling
+- FastEmbed
+- `BAAI/bge-small-en-v1.5`
+- Qdrant
+- Cosine similarity search
 
-Tool failure handling
+### Frontend
 
-Ticket creation failure handling
+- Streamlit
 
-5. Technology Stack
+### HTTP / Testing / Tooling
 
-Backend
+- HTTPX2
+- Pytest
+- Ruff
+- uv
+- Docker Compose
 
-Python 3.11+
+---
 
-FastAPI
+## 6. System Architecture
 
-SQLAlchemy
-
-Alembic
-
-PostgreSQL 16
-
-Pydantic
-
-Pydantic Settings
-
-AI / Agent
-
-LangGraph
-
-DeepSeek
-
-Agent intent classification
-
-Deterministic action planning
-
-Tool calling
-
-Multi-tool execution
-
-RAG
-
-FastEmbed
-
-BAAI/bge-small-en-v1.5
-
-Qdrant
-
-Cosine similarity search
-
-Frontend
-
-Streamlit
-
-HTTP / Testing / Tooling
-
-HTTPX2
-
-Pytest
-
-Ruff
-
-uv
-
-Docker Compose
-
-6. System Architecture
-
+```mermaid
 flowchart TD
     Customer[Customer]
 
@@ -321,11 +249,15 @@ flowchart TD
     ChatService --> DB
     API --> Frontend
     Frontend --> Customer
+```
 
-7. Application Workflow
+---
 
-Knowledge Query
+## 7. Application Workflow
 
+### Knowledge Query
+
+```text
 Customer
    ↓
 Streamlit
@@ -355,9 +287,11 @@ Grounded Response
 Conversation Memory
    ↓
 Streamlit
+```
 
-Order Status
+### Order Status
 
+```text
 Customer
    ↓
 Agent
@@ -377,9 +311,11 @@ Tool Result
 Response Generation
    ↓
 Customer
+```
 
-Payment Status
+### Payment Status
 
+```text
 Customer
    ↓
 Agent
@@ -395,15 +331,19 @@ PostgreSQL
 Tool Result
    ↓
 Customer Response
+```
 
-Multi-tool Request
+### Multi-tool Request
 
 Example:
 
+```text
 Please check my order 45821 status and tell me whether the payment was successful.
+```
 
 Workflow:
 
+```text
 Customer Request
       ↓
 Intent Classification
@@ -422,9 +362,11 @@ Execute both tools
 Combine results
       ↓
 Customer response
+```
 
-Human Escalation
+### Human Escalation
 
+```text
 Customer
    ↓
 HUMAN_ESCALATION
@@ -434,11 +376,15 @@ escalate_to_human
 Urgent Support Ticket
    ↓
 Customer Confirmation
+```
 
-8. RAG Architecture
+---
+
+## 8. RAG Architecture
 
 The knowledge-base pipeline is:
 
+```text
 Knowledge Base Documents
           ↓
 Document Loading
@@ -458,23 +404,31 @@ Relevant Context
 DeepSeek
           ↓
 Grounded Answer
+```
 
-Embedding Model
+### Embedding Model
 
+```text
 BAAI/bge-small-en-v1.5
+```
 
 Vector dimension:
 
+```text
 384
+```
 
-Vector Database
+### Vector Database
 
+```text
 Qdrant
 Collection: support_kb
 Distance: cosine
+```
 
-Knowledge Base Files
+### Knowledge Base Files
 
+```text
 knowledge_base/
 ├── faq.md
 ├── product_information.md
@@ -484,19 +438,25 @@ knowledge_base/
 ├── payment_policy.md
 ├── account_policy.md
 └── support_guidelines.md
+```
 
-Ingestion
+### Ingestion
 
 Run:
 
+```powershell
 uv run python -m app.ai.rag.ingest --directory knowledge_base
+```
 
-9. Agent Workflow
+---
+
+## 9. Agent Workflow
 
 The agent is implemented using LangGraph.
 
-High-level flow
+### High-level flow
 
+```text
 START
   ↓
 Intent Classification
@@ -519,41 +479,36 @@ Response Generation
 Finalization
   ↓
 END
+```
 
-Design Principle
+### Design Principle
 
 The LLM is responsible for:
 
-Understanding natural language
-
-Intent classification
-
-Argument extraction
-
-Language generation
+- Understanding natural language
+- Intent classification
+- Argument extraction
+- Language generation
 
 The application is responsible for:
 
-Business truth
-
-Database operations
-
-Customer ownership
-
-Input validation
-
-Tool execution
-
-Persistence
-
-Failure handling
+- Business truth
+- Database operations
+- Customer ownership
+- Input validation
+- Tool execution
+- Persistence
+- Failure handling
 
 This prevents the LLM from becoming the source of truth for transactional information.
 
-10. Intent Model
+---
+
+## 10. Intent Model
 
 Supported intents:
 
+```text
 KNOWLEDGE_QUERY
 ORDER_STATUS
 PAYMENT_STATUS
@@ -562,21 +517,28 @@ CANCELLATION
 SUPPORT_TICKET
 HUMAN_ESCALATION
 UNKNOWN
+```
 
 Multiple intents can be detected in one customer request.
 
 Example:
 
+```text
 Check my order 45821 and tell me whether payment succeeded.
+```
 
 Can produce:
 
+```text
 ORDER_STATUS
 PAYMENT_STATUS
+```
 
-11. Tool Documentation
+---
 
-check_order_status
+## 11. Tool Documentation
+
+### `check_order_status`
 
 Purpose:
 
@@ -584,19 +546,25 @@ Retrieve authoritative order information.
 
 Inputs:
 
+```text
 order_id
 customer_id
+```
 
 Returns information such as:
 
+```text
 order_id
 status
 total_amount
 expected_delivery
+```
 
 Customer ownership is validated before returning order information.
 
-check_payment_status
+---
+
+### `check_payment_status`
 
 Purpose:
 
@@ -604,19 +572,25 @@ Retrieve payment information associated with an order.
 
 Inputs:
 
+```text
 order_id
 customer_id
+```
 
 Returns:
 
+```text
 order_id
 payment_id
 transaction_id
 status
 amount
 created_at
+```
 
-create_support_ticket
+---
+
+### `create_support_ticket`
 
 Purpose:
 
@@ -624,15 +598,19 @@ Create a customer-support ticket.
 
 Typical information:
 
+```text
 customer_id
 category
 description
 priority
 conversation_id
+```
 
 The ticket is persisted through the application service layer.
 
-escalate_to_human
+---
+
+### `escalate_to_human`
 
 Purpose:
 
@@ -640,41 +618,52 @@ Escalate a customer issue to human support.
 
 The workflow creates an urgent support ticket associated with the current conversation.
 
-12. Conversation Memory
+---
+
+## 12. Conversation Memory
 
 Conversation memory is persisted in PostgreSQL.
 
-Data model
+### Data model
 
+```text
 Customer
    │
    └── Conversation
           │
           └── Messages
+```
 
 A conversation contains:
 
+```text
 conversation_id
 customer_id
 status
 created_at
 updated_at
+```
 
 Each message contains:
 
+```text
 message_id
 conversation_id
 role
 content
 created_at
+```
 
 Roles currently persisted for conversational context:
 
+```text
 user
 assistant
+```
 
-Memory Flow
+### Memory Flow
 
+```text
 Incoming customer request
         ↓
 Load conversation
@@ -686,63 +675,99 @@ Agent receives conversation history
 Generate response
         ↓
 Persist user + assistant turns
+```
 
 The backend maintains conversation context across requests.
 
-13. API Documentation
+---
 
-Customer Chat
+## 13. API Documentation
 
+### Customer Chat
+
+```http
 POST /chat
+```
 
 Request:
 
+```json
 {
   "customer_id": "UUID",
   "message": "Where is my order?",
   "conversation_id": null
 }
+```
 
 Response:
 
+```json
 {
   "conversation_id": "UUID",
   "response": "Please provide your order ID."
 }
+```
 
-List Conversations
+---
 
+### List Conversations
+
+```http
 GET /conversations?customer_id=<UUID>
+```
 
 Returns persisted conversations for the customer.
 
-Get Conversation
+---
 
+### Get Conversation
+
+```http
 GET /conversations/{conversation_id}?customer_id=<UUID>
+```
 
 Returns persisted messages for the selected conversation.
 
-Tickets
+---
 
+### Tickets
+
+```http
 POST /tickets
 GET /tickets/{id}
+```
 
-Orders
+---
 
+### Orders
+
+```http
 GET /orders/{id}
+```
 
-Payments
+---
 
+### Payments
+
+```http
 GET /payments/{id}
+```
 
-Human Escalation
+---
 
+### Human Escalation
+
+```http
 POST /escalate
+```
 
 The application also contains internal application capabilities through services and tools. The customer-facing Streamlit workflow uses natural-language chat rather than exposing individual business tools as UI actions.
 
-14. Project Structure
+---
 
+## 14. Project Structure
+
+```text
 customer-support-ai/
 │
 ├── app/
@@ -795,38 +820,47 @@ customer-support-ai/
 ├── uv.lock
 ├── streamlit_app.py
 └── README.md
+```
 
-15. Installation
+---
 
-Prerequisites
+## 15. Installation
+
+### Prerequisites
 
 Install:
 
-Python 3.11+
+- Python 3.11+
+- uv
+- Docker Desktop
+- Git
 
-uv
+### Clone repository
 
-Docker Desktop
-
-Git
-
-Clone repository
-
+```powershell
 git clone <your-repository-url>
 cd customer-support-ai
+```
 
-Install dependencies
+### Install dependencies
 
+```powershell
 uv sync
+```
 
-16. Environment Variables
+---
+
+## 16. Environment Variables
 
 Create:
 
+```text
 .env
+```
 
 Example:
 
+```env
 APP_ENV=development
 APP_NAME=customer-support-ai
 
@@ -845,153 +879,167 @@ QDRANT_TIMEOUT=10.0
 
 BACKEND_API_URL=http://localhost:8000
 DEMO_CUSTOMER_ID=<seeded-demo-customer-uuid>
+```
 
 Never commit:
 
+```text
 .env
+```
 
 API keys and credentials must not be committed to GitHub.
 
-17. Running the Application
+---
 
-Start PostgreSQL and Qdrant
+## 17. Running the Application
 
+### Start PostgreSQL and Qdrant
+
+```powershell
 docker compose up -d
+```
 
-Apply migrations
+### Apply migrations
 
+```powershell
 uv run alembic upgrade head
+```
 
-Seed development data
+### Seed development data
 
+```powershell
 uv run python -m scripts.seed_db
+```
 
-Ingest knowledge base
+### Ingest knowledge base
 
+```powershell
 uv run python -m app.ai.rag.ingest --directory knowledge_base
+```
 
-Start FastAPI
+### Start FastAPI
 
+```powershell
 uv run uvicorn app.main:app --reload
+```
 
 FastAPI:
 
+```text
 http://localhost:8000
+```
 
 Swagger:
 
+```text
 http://localhost:8000/docs
+```
 
-Start Streamlit
+### Start Streamlit
 
+```powershell
 uv run streamlit run streamlit_app.py
+```
 
 Streamlit is available on the local URL displayed by the command.
 
-18. Testing
+---
+
+## 18. Testing
 
 Run the complete test suite:
 
+```powershell
 uv run pytest -q
+```
 
 Run linting:
 
+```powershell
 uv run ruff check .
+```
 
-Important test scenarios
+### Important test scenarios
 
 The test suite covers:
 
-General FAQ
+1. General FAQ
+2. Knowledge-base queries
+3. Refund questions
+4. Order-status requests
+5. Payment-status requests
+6. Support-ticket creation
+7. Human escalation
+8. Unknown questions
+9. Invalid order ID
+10. Tool failure
+11. Retrieval failure
+12. Conversation follow-up
+13. Multiple requests in one conversation
+14. Multi-tool workflows
+15. Mixed RAG + tool workflows
+16. API validation
+17. Conversation persistence
+18. Frontend API failures
 
-Knowledge-base queries
+---
 
-Refund questions
-
-Order-status requests
-
-Payment-status requests
-
-Support-ticket creation
-
-Human escalation
-
-Unknown questions
-
-Invalid order ID
-
-Tool failure
-
-Retrieval failure
-
-Conversation follow-up
-
-Multiple requests in one conversation
-
-Multi-tool workflows
-
-Mixed RAG + tool workflows
-
-API validation
-
-Conversation persistence
-
-Frontend API failures
-
-19. Error Handling
+## 19. Error Handling
 
 The application explicitly handles:
 
-Invalid Input
+### Invalid Input
 
 Examples:
 
-Empty customer message
+- Empty customer message
+- Invalid UUID
+- Invalid tool arguments
+- Invalid order ID
 
-Invalid UUID
-
-Invalid tool arguments
-
-Invalid order ID
-
-Missing Information
+### Missing Information
 
 The agent asks for the required field instead of executing an incomplete action.
 
 Example:
 
+```text
 Customer:
 I want to check my order.
 
 Assistant:
 Please provide your order ID.
+```
 
-Order Not Found
+### Order Not Found
 
 The system returns a meaningful failure response rather than inventing order information.
 
-Payment Failure
+### Payment Failure
 
 Payment lookup errors are converted into structured tool failures and customer-safe responses.
 
-Retrieval Failure
+### Retrieval Failure
 
 The RAG workflow records the retrieval error and produces a fallback rather than fabricating knowledge-base content.
 
-LLM Failure
+### LLM Failure
 
 Generation errors are caught and handled through deterministic fallback logic where applicable.
 
-Ticket Failure
+### Ticket Failure
 
 Ticket creation errors are propagated as application-level failures and surfaced appropriately.
 
-20. Security and Data Ownership
+---
+
+## 20. Security and Data Ownership
 
 Business tools validate customer ownership before exposing customer-specific transactional data.
 
 For example:
 
+```text
 customer_id + order_id
         ↓
 ownership validation
@@ -999,115 +1047,125 @@ ownership validation
 database lookup
         ↓
 tool result
+```
 
 The application does not trust the LLM to enforce ownership or business authorization.
 
 Credentials are loaded through environment-based configuration.
 
-21. Known Limitations
+---
+
+## 21. Known Limitations
 
 This project is a development/demo system and does not integrate with real external business systems.
 
 Current limitations include:
 
-No real payment gateway
-
-No real carrier/shipping integration
-
-No production authentication system
-
-No production user-management layer
-
-No real external ticketing platform
-
-Demo customer/order/payment dataset
-
-Local/development infrastructure
-
-No production-grade observability platform
-
-No voice, email, WhatsApp, or SMS channels
+- No real payment gateway
+- No real carrier/shipping integration
+- No production authentication system
+- No production user-management layer
+- No real external ticketing platform
+- Demo customer/order/payment dataset
+- Local/development infrastructure
+- No production-grade observability platform
+- No voice, email, WhatsApp, or SMS channels
 
 The project intentionally keeps the scope focused on the required AI customer-support workflow.
 
-22. Future Improvements
+---
+
+## 22. Future Improvements
 
 Potential extensions include:
 
-Real CRM integration
+- Real CRM integration
+- Real payment-provider integration
+- Real shipping-provider integration
+- Customer authentication
+- Role-based support-agent dashboard
+- Conversation archive/restore
+- Conversation deletion/archive controls
+- Streaming responses
+- Better conversation titles
+- Advanced RAG evaluation
+- Observability and tracing
+- Rate limiting
+- Production deployment
+- Additional support tools
+- Human-agent handoff dashboard
 
-Real payment-provider integration
+---
 
-Real shipping-provider integration
+## 23. Sample Customer Queries
 
-Customer authentication
+### Knowledge Base
 
-Role-based support-agent dashboard
-
-Conversation archive/restore
-
-Conversation deletion/archive controls
-
-Streaming responses
-
-Better conversation titles
-
-Advanced RAG evaluation
-
-Observability and tracing
-
-Rate limiting
-
-Production deployment
-
-Additional support tools
-
-Human-agent handoff dashboard
-
-23. Sample Customer Queries
-
-Knowledge Base
-
+```text
 What is your refund policy?
+```
 
+```text
 Can I cancel my order?
+```
 
+```text
 How long does shipping take?
+```
 
-Order
+### Order
 
+```text
 Where is my order 45821?
+```
 
+```text
 What is the status of order 45821?
+```
 
-Payment
+### Payment
 
+```text
 Was my payment successful for order 45821?
+```
 
-Multiple Requests
+### Multiple Requests
 
+```text
 Check my order 45821 status and tell me whether the payment was successful.
+```
 
-Support Ticket
+### Support Ticket
 
+```text
 I want to create a support ticket.
+```
 
-Human Escalation
+### Human Escalation
 
+```text
 I want to speak with a human.
+```
 
-Follow-up
+### Follow-up
 
+```text
 My order number is 45821.
+```
 
 Then:
 
+```text
 When will it arrive?
+```
 
-24. Demonstration Flow
+---
+
+## 24. Demonstration Flow
 
 A complete demonstration should show:
 
+```text
 1. Knowledge-base question
         ↓
 2. RAG retrieval
@@ -1127,9 +1185,11 @@ A complete demonstration should show:
 9. Error scenario
         ↓
 10. Architecture explanation
+```
 
 Example multi-turn demo:
 
+```text
 Customer:
 Where is my order?
 
@@ -1148,11 +1208,15 @@ When will it arrive?
 Assistant:
 Uses the existing conversation context to understand
 that "it" refers to order 45821.
+```
 
-25. Engineering Principles
+---
 
-Separation of Concerns
+## 25. Engineering Principles
 
+### Separation of Concerns
+
+```text
 Frontend
    ↓
 API
@@ -1164,61 +1228,73 @@ Agent
 RAG / Tools
    ↓
 Repositories / Database
+```
 
-LLM vs Application Responsibilities
+### LLM vs Application Responsibilities
 
 The LLM handles language understanding and generation.
 
 The application owns:
 
-Transactional truth
+- Transactional truth
+- Validation
+- Persistence
+- Authorization
+- Business logic
+- Tool execution
+- Error handling
 
-Validation
-
-Persistence
-
-Authorization
-
-Business logic
-
-Tool execution
-
-Error handling
-
-Deterministic Business Logic
+### Deterministic Business Logic
 
 Transactional information is retrieved from application services and PostgreSQL rather than generated by the LLM.
 
-26. Development Commands
+---
 
-Run tests
+## 26. Development Commands
 
+### Run tests
+
+```powershell
 uv run pytest -q
+```
 
-Run linting
+### Run linting
 
+```powershell
 uv run ruff check .
+```
 
-Start backend
+### Start backend
 
+```powershell
 uv run uvicorn app.main:app --reload
+```
 
-Start frontend
+### Start frontend
 
+```powershell
 uv run streamlit run streamlit_app.py
+```
 
-Start infrastructure
+### Start infrastructure
 
+```powershell
 docker compose up -d
+```
 
-Stop infrastructure
+### Stop infrastructure
 
+```powershell
 docker compose down
+```
 
-27. Project Completion
+---
+
+## 27. Project Completion
 
 The implemented system covers:
 
+```text
 RAG
   ↓
 Agent
@@ -1234,5 +1310,6 @@ Streamlit Frontend
 Testing
   ↓
 Documentation
+```
 
-The architecture follows the project's requirement to implement a meaningful AI support application rather than a basic LLM-only chatbot
+The architecture follows the project's requirement to implement a meaningful AI support application rather than a basic LLM-only chatbot.
